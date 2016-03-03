@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{14882223-B244-45EA-94ED-803A25E85621}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QE</RootNamespace>
+    <AssemblyName>QE</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Shaders\Vertex\Basic.glsl" />
+    <EmbeddedResource Include="Shaders\Lib\HSV.glsl" />
+    <EmbeddedResource Include="Shaders\Lib\Texture.glsl" />
+    <EmbeddedResource Include="Shaders\Fragment\Texture.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Q\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\Q\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\Q\packages\OpenTK.1.1.2225.0\lib\net20\OpenTK.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Textures\Test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source\Engine\App\GL.cs" />
+    <Compile Include="Source\Engine\Cameras\Camera.cs" />
+    <Compile Include="Source\Engine\Draw\Primitives.cs" />
+    <Compile Include="Source\Engine\Draw\Text.cs" />
+    <Compile Include="Source\Engine\Draw\_Def.cs" />
+    <Compile Include="Source\Engine\Font\Font.cs" />
+    <Compile Include="Source\Engine\Font\_IFont.cs" />
+    <Compile Include="Source\Engine\RenderState\Camera.cs" />
+    <Compile Include="Source\Engine\RenderState\Misc.cs" />
+    <Compile Include="Source\Engine\RenderState\Target.cs" />
+    <Compile Include="Source\Engine\RenderState\Transformation.cs" />
+    <Compile Include="Source\Engine\RenderState\_Def.cs" />
+    <Compile Include="Source\Engine\Shader\Uniforms.cs" />
+    <Compile Include="Source\Engine\Texture\Misc.cs" />
+    <Compile Include="Source\Engine\Texture\Pixels.cs" />
+    <Compile Include="Source\Engine\Texture\SaveLoad.cs" />
+    <Compile Include="Source\Engine\Texture\_Def.cs" />
+    <EmbeddedResource Include="Shaders\Fragment\Color.glsl" />
+    <Compile Include="Source\Engine\App\Events.cs" />
+    <Compile Include="Source\Engine\App\Window.cs" />
+    <Compile Include="Source\Engine\Input\Keyboard.cs" />
+    <Compile Include="Source\Engine\Input\Mouse.cs" />
+    <Compile Include="Source\Engine\Model\_Def.cs" />
+    <Compile Include="Source\Engine\Shader\_Def.cs" />
+    <Compile Include="Source\Engine\State\Manager.cs" />
+    <Compile Include="Source\Engine\State\_Def.cs" />
+    <Compile Include="Source\EntitySystem\EGroup.cs" />
+    <Compile Include="Source\EntitySystem\Entity.cs" />
+    <Compile Include="Source\EntitySystem\ESystem.cs" />
+    <Compile Include="Source\UI\Element\Basic\Button.cs" />
+    <Compile Include="Source\UI\Element\Basic\CheckBox.cs" />
+    <Compile Include="Source\UI\Element\Basic\ElementList.cs" />
+    <Compile Include="Source\UI\Element\Basic\Frame.cs" />
+    <Compile Include="Source\UI\Element\Basic\Label.cs" />
+    <Compile Include="Source\UI\Element\Basic\Scale.cs" />
+    <Compile Include="Source\UI\Element\Basic\StateFrame.cs" />
+    <Compile Include="Source\UI\Element\Basic\TextInput.cs" />
+    <Compile Include="Source\UI\Element\Events.cs" />
+    <Compile Include="Source\UI\Element\Positioning.cs" />
+    <Compile Include="Source\UI\Element\Rendering.cs" />
+    <Compile Include="Source\UI\Element\Text.cs" />
+    <Compile Include="Source\UI\Element\_Def.cs" />
+    <Compile Include="Source\UI\State.cs" />
+    <Compile Include="Source\_Common\CmdOp.cs" />
+    <Compile Include="Source\Engine\App\_Def.cs" />
+    <Compile Include="Source\_Common\Color.cs" />
+    <Compile Include="Source\_Common\Compressor.cs" />
+    <Compile Include="Source\_Common\GMath.cs" />
+    <Compile Include="Source\_Common\GRandom.cs" />
+    <Compile Include="Source\_Common\GUtil.cs" />
+    <Compile Include="Source\_Common\Log.cs" />
+    <Compile Include="Source\_Common\Matrix\Mat3.cs" />
+    <Compile Include="Source\_Common\Matrix\Mat4.cs" />
+    <Compile Include="Source\_Common\Resource.cs" />
+    <Compile Include="Source\_Common\Serializer.cs" />
+    <Compile Include="Source\_Common\Timer.cs" />
+    <Compile Include="Source\_Common\Vector\Vec2.cs" />
+    <Compile Include="Source\_Common\Vector\Vec2i.cs" />
+    <Compile Include="Source\_Common\Vector\Vec4.cs" />
+    <Compile Include="Source\_Common\Vector\Vec3.cs" />
+    <Compile Include="Source\_Common\_Ext_Random.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
