@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{38656041-A78E-45F7-A077-6151429010EA}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Q</RootNamespace>
     <AssemblyName>Q</AssemblyName>
@@ -75,9 +75,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Misc\ResourcedTexture.cs" />
+    <Compile Include="Source\Peer\_Def.cs" />
     <Compile Include="Source\QLauncher.cs" />
+    <Compile Include="Source\Terrain\Messages.cs" />
     <Compile Include="Source\Terrain\Renderer.cs" />
     <Compile Include="Source\Terrain\_Def.cs" />
+    <Compile Include="Source\World\Room.cs" />
+    <Compile Include="Source\World\_Def.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

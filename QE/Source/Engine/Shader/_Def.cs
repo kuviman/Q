@@ -45,8 +45,6 @@ namespace QE.Engine {
                     completeSource = lib + completeSource;
                 completeSource = version + completeSource;
 
-                Console.WriteLine(completeSource + "\n=======");
-
                 GL.ShaderSource(shader, completeSource);
                 GL.CompileShader(shader);
                 int compileStatus;

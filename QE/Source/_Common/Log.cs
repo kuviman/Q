@@ -7,9 +7,9 @@ namespace QE {
     public static class Log {
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void Info(string message, params object[] args) {
+        public static void Info(string message) {
             var method = new StackFrame(1, true).GetMethod();
-            Console.WriteLine(" INFO " + method.DeclaringType.Name + "." + method.Name + ": " + string.Format(message, args));
+            Console.WriteLine(" INFO " + method.DeclaringType.Name + "." + method.Name + ": " + message);
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace QE {
 
@@ -35,6 +36,12 @@ namespace QE {
         public static string Escape(char c) {
             string quoted = Newtonsoft.Json.JsonConvert.ToString(c);
             return quoted.Substring(1, quoted.Length - 2);
+        }
+
+        public static void StartThread(Action action) {
+            var t = new System.Threading.Thread(() => action());
+            t.IsBackground = true;
+            t.Start();
         }
 
     }

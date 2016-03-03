@@ -98,6 +98,7 @@
     <Compile Include="Source\EntitySystem\EGroup.cs" />
     <Compile Include="Source\EntitySystem\Entity.cs" />
     <Compile Include="Source\EntitySystem\ESystem.cs" />
+    <Compile Include="Source\Net\Peer.cs" />
     <Compile Include="Source\UI\Element\Basic\Button.cs" />
     <Compile Include="Source\UI\Element\Basic\CheckBox.cs" />
     <Compile Include="Source\UI\Element\Basic\ElementList.cs" />

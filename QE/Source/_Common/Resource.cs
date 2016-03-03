@@ -6,8 +6,6 @@ namespace QE {
     public static class Resource {
 
         static System.IO.Stream Stream(Assembly assembly, string name) {
-            System.Console.WriteLine(string.Join(", ", assembly.GetManifestResourceNames()));
-            System.Console.WriteLine("LOAD " + assembly.GetName().Name + "." + name.Replace('/', '.'));
             return assembly.GetManifestResourceStream(assembly.GetName().Name + "." + name.Replace('/', '.'));
         }
 
