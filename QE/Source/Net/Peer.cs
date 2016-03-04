@@ -91,6 +91,8 @@ namespace QE.Net {
             Send(info, DeliveryMethod.Reliable);
         }
 
+        public event Action<string> OnPlayerConnected;
+
         Message GetMessage() {
             NetIncomingMessage message;
             while ((message = netPeer.ReadMessage()) != null) {
@@ -114,6 +116,7 @@ namespace QE.Net {
                         }
                         connections[sender] = message.SenderConnection;
                         SendPlayersInfo();
+                        OnPlayerConnected?.Invoke(sender);
                         break;
                     }
                     if (msg is PlayersInfo && !Server) {

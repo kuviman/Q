@@ -8,10 +8,10 @@ namespace Q {
 
         public class Renderer {
 
-            Terrain terrain;
+            public Terrain Terrain { get; private set; }
 
             public Renderer(Terrain terrain) {
-                this.terrain = terrain;
+                Terrain = terrain;
                 terrain.OnUpdate += (i, j, v) => Update(i, j);
             }
 
@@ -19,7 +19,7 @@ namespace Q {
                 SortedSet<ResourcedTexture> textures = new SortedSet<ResourcedTexture>();
                 for (int i = 0; i <= CHUNK_SIZE; i++)
                     for (int j = 0; j <= CHUNK_SIZE; j++) {
-                        textures.Add(terrain[cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j].Texture);
+                        textures.Add(Terrain[cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j].Texture);
                     }
                 return textures;
             }
@@ -31,13 +31,13 @@ namespace Q {
                 List<Vec3> shape = new List<Vec3>();
                 for (int i = 0; i < CHUNK_SIZE; i++)
                     for (int j = 0; j < CHUNK_SIZE; j++) {
-                        shape.Add(terrain.GetVec(cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j));
-                        shape.Add(terrain.GetVec(cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j + 1));
-                        shape.Add(terrain.GetVec(cx * CHUNK_SIZE + i + 1, cy * CHUNK_SIZE + j));
+                        shape.Add(Terrain.GetVec(cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j));
+                        shape.Add(Terrain.GetVec(cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j + 1));
+                        shape.Add(Terrain.GetVec(cx * CHUNK_SIZE + i + 1, cy * CHUNK_SIZE + j));
 
-                        shape.Add(terrain.GetVec(cx * CHUNK_SIZE + i + 1, cy * CHUNK_SIZE + j + 1));
-                        shape.Add(terrain.GetVec(cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j + 1));
-                        shape.Add(terrain.GetVec(cx * CHUNK_SIZE + i + 1, cy * CHUNK_SIZE + j));
+                        shape.Add(Terrain.GetVec(cx * CHUNK_SIZE + i + 1, cy * CHUNK_SIZE + j + 1));
+                        shape.Add(Terrain.GetVec(cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j + 1));
+                        shape.Add(Terrain.GetVec(cx * CHUNK_SIZE + i + 1, cy * CHUNK_SIZE + j));
                     }
                 return new Model(shape, Shader);
             }
@@ -72,7 +72,7 @@ namespace Q {
                     var tex = Empty.Copy();
                     for (int i = 0; i <= CHUNK_SIZE; i++)
                         for (int j = 0; j <= CHUNK_SIZE; j++)
-                            tex[i, j] = new Color(1, 1, 1, texture.CompareTo(terrain[cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j].Texture) > 0 ? 0 : 1);
+                            tex[i, j] = new Color(1, 1, 1, texture.CompareTo(Terrain[cx * CHUNK_SIZE + i, cy * CHUNK_SIZE + j].Texture) > 0 ? 0 : 1);
                     alphaTexture[c][texture] = tex;
                 }
                 return alphaTexture[c][texture];

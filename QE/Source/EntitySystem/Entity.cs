@@ -11,25 +11,17 @@ namespace QE.EntitySystem {
         public Entity(string id) {
             Id = id;
         }
-        public Entity(ESystem esystem) {
-            Id = "SERVER";
-        }
 
-        Dictionary<string, IComponent> privateComponents = new Dictionary<string, IComponent>();
+        public event Action OnChanged;
 
-        [NonSerialized]
-        Dictionary<string, IComponent> sharedComponents = new Dictionary<string, IComponent>();
+        Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
         public void Set(string name, IComponent component) {
-            if (component.Shared)
-                sharedComponents[name] = component;
-            else
-                privateComponents[name] = component;
+            component.OnChanged += OnChanged;
+            components[name] = component;
         }
         public IComponent Get(string name) {
-            if (privateComponents.ContainsKey(name))
-                return privateComponents[name];
-            if (sharedComponents.ContainsKey(name))
-                return sharedComponents[name];
+            if (components.ContainsKey(name))
+                return components[name];
             return null;
         }
 
@@ -51,14 +43,7 @@ namespace QE.EntitySystem {
     }
 
     public interface IComponent {
-        bool Shared { get; }
-    }
-
-    public abstract class Component : IComponent {
-        public bool Shared { get; private set; }
-        public Component(bool shared) {
-            Shared = shared;
-        }
+        event Action OnChanged;
     }
 
 }
