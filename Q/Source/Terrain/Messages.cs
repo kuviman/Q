@@ -6,7 +6,7 @@ namespace Q {
 
     partial class Terrain {
 
-        public static void SetupMessages(Peer peer) {
+        public static void SetupHandlers(Peer peer) {
             if (!peer.Server) {
                 peer.World.OnNewRoom += (room) => {
                     peer.World[room].OnLoad += (int fromX, int fromY, int toX, int toY) => {

@@ -76,13 +76,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Components\Position.cs" />
+    <Compile Include="Source\Misc\PlayerGroup.cs" />
     <Compile Include="Source\Misc\ResourcedTexture.cs" />
     <Compile Include="Source\Peer\Client.cs" />
     <Compile Include="Source\Peer\PlayerData.cs" />
     <Compile Include="Source\Peer\Server.cs" />
     <Compile Include="Source\Peer\_Def.cs" />
     <Compile Include="Source\QLauncher.cs" />
-    <Compile Include="Source\Systems\Render\_Def.cs" />
+    <Compile Include="Source\Systems\EntityUpdater.cs" />
     <Compile Include="Source\Terrain\Messages.cs" />
     <Compile Include="Source\Terrain\Renderer.cs" />
     <Compile Include="Source\Terrain\_Def.cs" />

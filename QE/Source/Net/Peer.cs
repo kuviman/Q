@@ -7,13 +7,12 @@ namespace QE.Net {
 
     [Serializable]
     public enum DeliveryMethod {
-        Default = NetDeliveryMethod.Unreliable,
+        Default = NetDeliveryMethod.UnreliableSequenced,
         Reliable = NetDeliveryMethod.ReliableOrdered,
     }
 
     public class Peer {
         const string SERVER_NICK = "QE_SERVER";
-        const bool PLAIN_TEXT = false;
 
         NetPeer netPeer;
 
@@ -46,10 +45,17 @@ namespace QE.Net {
             netPeer.Start();
         }
 
-        public void Send(object msg, DeliveryMethod method) {
-            Log.Info("Sending to everyone: " + string.Join(", ", connections.Keys));
+        public void SendToAll(object msg, DeliveryMethod method) {
             foreach (var connection in connections.Values)
                 Send(connection, msg, method);
+            if (!Server) {
+                foreach (var connection in connections.Values)
+                    foreach (var player in ConnectedPlayers) {
+                        if (player == Nick)
+                            continue;
+                        Send(connection, new TranslateMessage(player, msg, method), method);
+                    }
+            }
         }
         public void Send(string to, object msg, DeliveryMethod method) {
             if (!connections.ContainsKey(to))
@@ -62,15 +68,9 @@ namespace QE.Net {
         void Send(NetConnection to, object msg, DeliveryMethod method) {
             var message = netPeer.CreateMessage();
             message.Write(Nick);
-            if (PLAIN_TEXT) {
-                var data = Serializer.ToJson(msg);
-                Log.Info("SENT " + data);
-                message.Write(data);
-            } else {
-                byte[] data = Serializer.ToBytes(msg);
-                message.Write(data.Length);
-                message.Write(data);
-            }
+            byte[] data = Serializer.ToBytes(msg);
+            message.Write(data.Length);
+            message.Write(data);
             netPeer.SendMessage(message, to, (NetDeliveryMethod)method);
         }
 
@@ -88,7 +88,7 @@ namespace QE.Net {
             var info = new PlayersInfo();
             foreach (var conn in connections)
                 info.players.Add(conn.Key);
-            Send(info, DeliveryMethod.Reliable);
+            SendToAll(info, DeliveryMethod.Reliable);
         }
 
         public event Action<string> OnPlayerConnected;
@@ -99,15 +99,8 @@ namespace QE.Net {
                 switch (message.MessageType) {
                 case NetIncomingMessageType.Data:
                     string sender = message.ReadString();
-                    object msg;
-                    if (PLAIN_TEXT) {
-                        var data = message.ReadString();
-                        Log.Info(Nick + " RECEIVED " + data);
-                        msg = Serializer.FromJson<object>(data);
-                    } else {
-                        int size = message.ReadInt32();
-                        msg = Serializer.FromBytes<object>(message.ReadBytes(size));
-                    }
+                    int size = message.ReadInt32();
+                    object msg = Serializer.FromBytes<object>(message.ReadBytes(size));
                     if (msg is ConnectMessage && Server) {
                         var connectMsg = (ConnectMessage)msg;
                         if (connections.ContainsKey(sender)) {
@@ -123,6 +116,11 @@ namespace QE.Net {
                         var info = (PlayersInfo)msg;
                         players = new HashSet<string>(info.players);
                         _connected = true;
+                        break;
+                    }
+                    if (msg is TranslateMessage) {
+                        var translate = (TranslateMessage)msg;
+                        Send(translate.player, translate.msg, translate.method);
                         break;
                     }
                     return new Message(sender, msg);
@@ -191,6 +189,18 @@ namespace QE.Net {
         [Serializable]
         class PlayersInfo {
             public List<string> players = new List<string>();
+        }
+
+        [Serializable]
+        class TranslateMessage {
+            public string player;
+            public object msg;
+            public DeliveryMethod method;
+            public TranslateMessage(string player, object msg, DeliveryMethod method) {
+                this.player = player;
+                this.msg = msg;
+                this.method = method;
+            }
         }
 
     }

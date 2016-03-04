@@ -24,12 +24,31 @@ namespace Q {
 
         void Init() {
             World = new World();
-            Terrain.SetupMessages(this);
+            Terrain.SetupHandlers(this);
+            EntityUpdater.SetupHandlers(this);
         }
 
         long NextId = 0;
         public string GenId() {
             return Nick + '#' + (++NextId);
+        }
+
+        public double TickTime { get; set; } = 0.05;
+        double nextTick = 0;
+
+        public event Action OnTick;
+        public virtual void Tick() {
+            OnTick?.Invoke();
+        }
+
+        public void Update(double dt) {
+            nextTick -= dt;
+            if (nextTick < 0) {
+                nextTick += TickTime;
+                if (nextTick < 0)
+                    nextTick = 0;
+                Tick();
+            }
         }
     }
 

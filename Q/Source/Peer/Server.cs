@@ -24,7 +24,7 @@ namespace Q {
             };
             OnPlayerConnected += (string player) => {
                 if (!playerData.ContainsKey(player))
-                    playerData[player] = new PlayerData(this);
+                    playerData[player] = new PlayerData(player, this);
                 Send(player, playerData[player], QE.Net.DeliveryMethod.Reliable);
             };
 
@@ -35,7 +35,7 @@ namespace Q {
             Timer timer = new Timer();
             while (true) {
                 CheckMessages();
-                timer.Tick();
+                Update(timer.Tick());
             }
         }
 

@@ -15,6 +15,11 @@ namespace QE.EntitySystem {
         public event Action OnChanged;
 
         Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
+
+        public IEnumerable<KeyValuePair<string, IComponent>> Components {
+            get { return components; }
+        }
+
         public void Set(string name, IComponent component) {
             component.OnChanged += OnChanged;
             components[name] = component;

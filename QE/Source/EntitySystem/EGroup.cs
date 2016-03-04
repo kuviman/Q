@@ -10,6 +10,10 @@ namespace QE.EntitySystem {
 
         public EGroup(ESystem esystem, Predicate<Entity> filter) {
             this.filter = filter;
+            foreach (var e in esystem.Entities)
+                Check(e);
+            esystem.OnAddEntity += Check;
+            esystem.OnRemoveEntity += e => entities.Remove(e);
         }
 
         HashSet<Entity> entities = new HashSet<Entity>();

@@ -7,8 +7,8 @@ namespace Q {
     [Serializable]
     class PlayerData {
         public Entity MainUnit { get; set; }
-        public PlayerData(Peer peer) {
-            MainUnit = new Entity(peer.GenId());
+        public PlayerData(string player, Peer peer) {
+            MainUnit = new Entity(player + "#Hero");
             MainUnit.Set(new Position("default", Vec3.Zero, 0));
         }
     }
