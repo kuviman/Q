@@ -14,7 +14,7 @@ namespace Q {
 
         public ESystem ESystem { get; private set; } = new ESystem();
 
-        public Peer() : base(APP_NAME, APP_PORT) {
+        public Peer() : base(APP_NAME, "Q_SERVER", APP_PORT) {
             Init();
         }
 
@@ -26,6 +26,8 @@ namespace Q {
             World = new World();
             Terrain.SetupHandlers(this);
             EntityUpdater.SetupHandlers(this);
+            MovementSytem.SetupHandlers(this);
+            SetupEntityUpdateHandlers();
         }
 
         long NextId = 0;
@@ -41,6 +43,7 @@ namespace Q {
             OnTick?.Invoke();
         }
 
+        public event Action<double> OnUpdate;
         public void Update(double dt) {
             nextTick -= dt;
             if (nextTick < 0) {
@@ -49,6 +52,34 @@ namespace Q {
                     nextTick = 0;
                 Tick();
             }
+            OnUpdate?.Invoke(dt);
+        }
+
+        public event Action<Entity, Entity, ISet<string>> OnUpdateEntity;
+        public void UpdateEntity(Entity e, Entity update) {
+            HashSet<string> updated = new HashSet<string>();
+            OnUpdateEntity?.Invoke(e, update, updated);
+            foreach (var comp in update.Components) {
+                if (updated.Contains(comp.Key))
+                    continue;
+                e.Set(comp.Key, comp.Value);
+            }
+        }
+
+        void SetupEntityUpdateHandlers() {
+            var ownEntities = new PlayerGroup(ESystem, Nick);
+            OnTick += () => {
+                foreach (var e in ownEntities.Entities) {
+                    SendToAll(e, Net.DeliveryMethod.Default);
+                }
+            };
+            AddHandler((string sender, Entity e) => {
+                if (ESystem[e.Id] == null) {
+                    ESystem.Add(e);
+                } else {
+                    UpdateEntity(ESystem[e.Id], e);
+                }
+            });
         }
     }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -86,6 +87,12 @@ namespace QE {
         class SerializationContractResolver : DefaultContractResolver {
             public SerializationContractResolver() {
                 IgnoreSerializableAttribute = false;
+            }
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization) {
+                var prop = base.CreateProperty(member, memberSerialization);
+                if (prop.PropertyType.IsSubclassOf(typeof(Delegate)))
+                    prop.ShouldSerialize = (o) => false;
+                return prop;
             }
         }
 

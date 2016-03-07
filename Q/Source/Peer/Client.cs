@@ -22,7 +22,7 @@ namespace Q {
 
         Camera cam = new Camera(Math.PI / 2);
         Terrain.Renderer terrainRenderer;
-        string Room { get { return PlayerData == null ? null : PlayerData.MainUnit.Get<Position>().Room; } }
+        string Room { get { return PlayerData == null ? null : PlayerData.MainUnit.Get<Components.Position>().Room; } }
 
         public override void MouseWheel(double delta) {
             base.MouseWheel(delta);
@@ -50,9 +50,9 @@ namespace Q {
             if (Key.D.Pressed())
                 v.X += 1;
             v = Vec2.Rotate(v, cam.Rotation);
-            cam.Position += 10 * new Vec3(v, 0) * dt;
             if (PlayerData != null) {
-                PlayerData.MainUnit.Get<Position>().Pos = cam.Position;
+                PlayerData.MainUnit.Get<Components.Movement>().Vel = new Vec3(v * 10, 0);
+                cam.Position = PlayerData.MainUnit.Get<Components.Position>().Pos;
             }
         }
         
@@ -76,7 +76,7 @@ namespace Q {
                 terrainRenderer.Render(x - dx, y - dy, x + dx + 1, y + dy + 1);
 
                 foreach (var e in peer.ESystem.Entities) {
-                    var pos = e.Get<Position>();
+                    var pos = e.Get<Components.Position>();
                     if (pos == null)
                         continue;
                     RenderState.Push();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace QE.EntitySystem {
 
@@ -10,8 +11,20 @@ namespace QE.EntitySystem {
 
         public Entity(string id) {
             Id = id;
+            InitEvents();
         }
 
+        [OnDeserialized]
+        void RestoreEvents(StreamingContext context) {
+            InitEvents();
+        }
+
+        void InitEvents() {
+            OnComponentChanged += (name, c1, c2) => OnChanged?.Invoke();
+            foreach (var comp in components.Values)
+                comp.OnChanged += OnChanged;
+        }
+        
         public event Action OnChanged;
 
         Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
@@ -20,9 +33,16 @@ namespace QE.EntitySystem {
             get { return components; }
         }
 
+        public event Action<string, IComponent, IComponent> OnComponentChanged;
         public void Set(string name, IComponent component) {
-            component.OnChanged += OnChanged;
-            components[name] = component;
+            var current = Get(name);
+            if (component != null) {
+                component.OnChanged += OnChanged;
+                components[name] = component;
+            } else {
+                components.Remove(name);
+            }
+            OnComponentChanged?.Invoke(name, current, component);
         }
         public IComponent Get(string name) {
             if (components.ContainsKey(name))
@@ -43,6 +63,10 @@ namespace QE.EntitySystem {
         }
         public bool Has<T>() where T : IComponent {
             return Has(typeof(T).FullName);
+        }
+
+        public static string ComponentName<T>() {
+            return typeof(T).FullName;
         }
 
     }

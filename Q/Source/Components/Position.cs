@@ -2,7 +2,7 @@
 using QE;
 using QE.EntitySystem;
 
-namespace Q {
+namespace Q.Components {
 
     [Serializable]
     class Position : IComponent {

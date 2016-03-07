@@ -9,7 +9,8 @@ namespace Q {
         public Entity MainUnit { get; set; }
         public PlayerData(string player, Peer peer) {
             MainUnit = new Entity(player + "#Hero");
-            MainUnit.Set(new Position("default", Vec3.Zero, 0));
+            MainUnit.Set(new Components.Position("default", Vec3.Zero, 0));
+            MainUnit.Set(new Components.Movement());
         }
     }
 

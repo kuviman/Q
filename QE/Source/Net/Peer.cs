@@ -12,8 +12,7 @@ namespace QE.Net {
     }
 
     public class Peer {
-        const string SERVER_NICK = "QE_SERVER";
-
+        const string SERVER_NICK = "?@@#@##$@#???SF";
         NetPeer netPeer;
 
         public bool Server { get; private set; }
@@ -36,11 +35,12 @@ namespace QE.Net {
             Send(SERVER_NICK, new ConnectMessage(), DeliveryMethod.Reliable);
         }
 
-        public Peer(string app, int port) {
+        public Peer(string app, string nick, int port) {
             Server = true;
-            Nick = SERVER_NICK;
+            Nick = nick;
             var conf = new NetPeerConfiguration(app);
             conf.Port = port;
+            conf.AcceptIncomingConnections = true;
             netPeer = new NetServer(conf);
             netPeer.Start();
         }
@@ -63,7 +63,9 @@ namespace QE.Net {
             Send(connections[to], msg, method);
         }
         public void SendToServer(object msg, DeliveryMethod method) {
-            Send(SERVER_NICK, msg, method);
+            if (!Server)
+                foreach (var connection in connections.Values)
+                    Send(connection, msg, method);
         }
         void Send(NetConnection to, object msg, DeliveryMethod method) {
             var message = netPeer.CreateMessage();
@@ -131,7 +133,7 @@ namespace QE.Net {
                     }
                     break;
                 default:
-                    Log.Info("Got unrecognized message " + message);
+                    Log.Info("Got unrecognized message " + message.ReadString());
                     break;
                 }
             }
