@@ -22,6 +22,17 @@ namespace Q.Systems {
                 d = pos.Pos;
             }
             public void Update(Components.Position npos, Components.Movement nmov) {
+                if (pos.Room != npos.Room) {
+                    pos.Room = npos.Room;
+                    pos.Rot = npos.Rot;
+                    pos.Pos = npos.Pos;
+                    mov.Vel = nmov.Vel;
+                    a = b = c = Vec3.Zero;
+                    d = pos.Pos;
+                    return;
+                }
+                pos.Rot = npos.Rot;
+
                 k = 0;
                 d = pos.Pos;
                 c = mov.Vel * LAG;
