@@ -76,6 +76,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Components\Legs.cs" />
     <Compile Include="Source\Components\Face.cs" />
     <Compile Include="Source\Components\Movement.cs" />
     <Compile Include="Source\Components\Position.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Source\QLauncher.cs" />
     <Compile Include="Source\Systems\EntityUpdater.cs" />
     <Compile Include="Source\Systems\Movement.cs" />
+    <Compile Include="Source\Systems\Render\Legs.cs" />
     <Compile Include="Source\Systems\Render\Face.cs" />
     <Compile Include="Source\Terrain\Messages.cs" />
     <Compile Include="Source\Terrain\Renderer.cs" />

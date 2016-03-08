@@ -16,7 +16,9 @@ namespace Q.Systems.Render {
                     RenderState.Push();
                     RenderState.Translate(pos.Pos);
                     RenderState.FaceCam();
-                    RenderState.Set("texture", e.Get<Components.Face>().Texture);
+                    var face = e.Get<Components.Face>();
+                    RenderState.Translate(0, face.Height);
+                    RenderState.Set("texture", face.Texture);
                     RenderState.Set("rotation", -0.25 + (-pos.Rot + (RenderState.CameraMatrix.Inverse * new Vec4(1, 0, 0, 0)).XY.Arg) / (2 * Math.PI));
                     RenderState.Origin(0.5, 0);
                     RotatedModel.Render();

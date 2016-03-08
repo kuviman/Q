@@ -17,6 +17,7 @@ namespace Q {
             });
 
             Systems.Render.Face.SetupHandlers(this);
+            Systems.Render.Legs.SetupHandlers(this);
 
             cam.Distance = 8;
             cam.UpAngle = -Math.PI / 2.3;
@@ -65,6 +66,8 @@ namespace Q {
                 double t = -eyePos.Z / dir.Z;
                 pos.Rot = (eyePos + dir * t - pos.Pos).XY.Arg;
             }
+
+            App.Title = ((int)App.FPS).ToString();
         }
         public override void MouseMove(Vec2 position) {
             base.MouseMove(position);

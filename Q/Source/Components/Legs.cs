@@ -4,18 +4,9 @@ using QE.EntitySystem;
 namespace Q.Components {
 
     [Serializable]
-    class Face : IComponent {
-        public Face(ResourcedTexture texture, double height = 0.2) {
-            this.texture = texture;
+    class Legs : IComponent {
+        public Legs(double height = 0.1) {
             this.height = height;
-        }
-        ResourcedTexture texture;
-        public ResourcedTexture Texture {
-            get { return texture; }
-            set {
-                texture = value;
-                OnChanged?.Invoke();
-            }
         }
 
         double height;
