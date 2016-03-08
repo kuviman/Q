@@ -55,13 +55,21 @@ namespace Q {
                     for (int j = 0; j <= CHUNK_SIZE; j++)
                         Empty[i, j] = new Color(1, 1, 1, 1);
                 Empty.Wrap = Texture.WrapMode.Clamp;
-                Empty.Smooth = true;
+                Empty.Smooth = false;
             }
 
             void Update(int i, int j) {
                 Vec2i c = new Vec2i(GMath.DivDown(i, CHUNK_SIZE), GMath.DivDown(j, CHUNK_SIZE));
-                alphaTexture.Remove(c);
-                model.Remove(c);
+                List<Vec2i> todel = new List<Vec2i>();
+                todel.Add(c);
+                if (i % CHUNK_SIZE == 0)
+                    todel.Add(c - Vec2i.OrtX);
+                if (j % CHUNK_SIZE == 0)
+                    todel.Add(c - Vec2i.OrtY);
+                foreach (var ch in todel) {
+                    alphaTexture.Remove(ch);
+                    model.Remove(ch);
+                }
             }
 
             Texture GetAlpha(int cx, int cy, ResourcedTexture texture) {

@@ -14,10 +14,11 @@ namespace Q {
                     List<ResourcedTexture> texs = new List<ResourcedTexture>();
                     texs.Add(new ResourcedTexture("Terrain/Grass.png"));
                     texs.Add(new ResourcedTexture("Terrain/DarkGrass.png"));
-                    for (int i = fromX; i <= toX; i++)
-                        for (int j = fromY; j <= toY; j++) {
+                    for (int i = fromX; i < toX; i++)
+                        for (int j = fromY; j < toY; j++) {
                             var v = World[room].Terrain[i, j];
                             v.Texture = GRandom.Choice(texs);
+                            v.Height = GRandom.NextDouble(0, -1);
                             World[room].Terrain[i, j] = v;
                         }
                 };

@@ -49,7 +49,6 @@ namespace Q.Systems.Render {
                     for (int x = -1; x <= 1; x += 2) {
                         RenderState.Push();
                         RenderState.Translate(x * 2, Math.Max(0, sn * x));
-                        //RenderState.Scale(0.1);
                         RenderState.Origin(0, 0.5);
                         Draw.Quad();
                         RenderState.Pop();
