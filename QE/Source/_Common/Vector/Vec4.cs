@@ -41,7 +41,7 @@ namespace QE {
         }
 
         public override string ToString() {
-            return string.Format("({0}; {1}; {2})", X, Y, Z);
+            return string.Format("({0}; {1}; {2}; {3})", X, Y, Z, W);
         }
 
         public static readonly Vec4 Zero = new Vec4(0, 0, 0, 0);

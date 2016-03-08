@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using QE;
 using QE.EntitySystem;
 
-namespace Q {
+namespace Q.Systems {
 
-    class MovementSytem {
+    static class MovementSytem {
 
         class Prediction {
             const double LAG = 0.1;

@@ -6,15 +6,17 @@ using QE.EntitySystem;
 namespace Q {
 
     class Client : State {
-        Peer peer;
+        public Peer Peer { get; private set; }
         public PlayerData PlayerData { get; set; }
 
         public Client(string nick, string host) {
-            peer = new Peer(nick, host);
-            peer.AddHandler((string sender, PlayerData playerData) => {
+            Peer = new Peer(nick, host);
+            Peer.AddHandler((string sender, PlayerData playerData) => {
                 PlayerData = playerData;
-                peer.ESystem.Add(playerData.MainUnit);
+                Peer.ESystem.Add(playerData.MainUnit);
             });
+
+            Systems.Render.Face.SetupHandlers(this);
 
             cam.Distance = 8;
             cam.UpAngle = -Math.PI / 2.3;
@@ -37,8 +39,8 @@ namespace Q {
 
         public override void Update(double dt) {
             base.Update(dt);
-            peer.Update(dt);
-            peer.CheckMessages();
+            Peer.Update(dt);
+            Peer.CheckMessages();
 
             Vec2 v = Vec2.Zero;
             if (Key.W.Pressed())
@@ -52,12 +54,33 @@ namespace Q {
             v = Vec2.Rotate(v, cam.Rotation);
             if (PlayerData != null) {
                 PlayerData.MainUnit.Get<Components.Movement>().Vel = new Vec3(v * 10, 0);
-                cam.Position = PlayerData.MainUnit.Get<Components.Position>().Pos;
+                var pos = PlayerData.MainUnit.Get<Components.Position>();
+                cam.Position = pos.Pos;
+                Vec3 dir = new Vec3(2 * mousePos.X / winSize.Y - (double)winSize.X / winSize.Y, 2 * mousePos.Y / winSize.Y - 1, -1);
+                dir.X *= Math.Tan(cam.FOV / 2);
+                dir.Y *= Math.Tan(cam.FOV / 2);
+                var eyePos = (cam.Matrix.Inverse * Vec4.OrtW).XYZ;
+                dir = (cam.Matrix.Inverse * new Vec4(dir, 0)).XYZ;
+                // eyePos + dir * t = 0
+                double t = -eyePos.Z / dir.Z;
+                pos.Rot = (eyePos + dir * t - pos.Pos).XY.Arg;
             }
         }
-        
+        public override void MouseMove(Vec2 position) {
+            base.MouseMove(position);
+            if (MouseButton.Middle.Pressed()) {
+                cam.Rotation += (mousePos.X - position.X) / 100;
+                cam.UpAngle = GMath.Clamp(cam.UpAngle + (mousePos.Y - position.Y) / 100, -Math.PI / 2, -cam.FOV / 2 - 1e-2);
+            }
+            mousePos = position;
+        }
+        Vec2 mousePos;
+        Vec2i winSize = new Vec2i(1, 1);
+
+        public event Action<string> OnRenderRoom;
         public override void Render() {
             base.Render();
+            winSize = RenderState.Size;
             RenderState.Push();
             Draw.Clear(Color.Sky);
             cam.Apply();
@@ -67,27 +90,14 @@ namespace Q {
             int dx = GMath.Ceil(dy * RenderState.Aspect);
 
             if (Room != null) {
-                if (peer.World[Room] == null)
-                    peer.World.AddRoom(Room);
-                if (terrainRenderer == null || terrainRenderer.Terrain != peer.World[Room].Terrain)
-                    terrainRenderer = new Terrain.Renderer(peer.World[Room].Terrain);
+                if (Peer.World[Room] == null)
+                    Peer.World.AddRoom(Room);
+                if (terrainRenderer == null || terrainRenderer.Terrain != Peer.World[Room].Terrain)
+                    terrainRenderer = new Terrain.Renderer(Peer.World[Room].Terrain);
                 const double D = 30;
-                peer.World[Room].RequestLoaded(cam.Position.X - D, cam.Position.Y - D, cam.Position.X + D, cam.Position.Y + D);
+                Peer.World[Room].RequestLoaded(cam.Position.X - D, cam.Position.Y - D, cam.Position.X + D, cam.Position.Y + D);
                 terrainRenderer.Render(x - dx, y - dy, x + dx + 1, y + dy + 1);
-
-                foreach (var e in peer.ESystem.Entities) {
-                    var pos = e.Get<Components.Position>();
-                    if (pos == null)
-                        continue;
-                    RenderState.Push();
-                    RenderState.Translate(pos.Pos);
-                    RenderState.Rotate(pos.Rot);
-                    RenderState.Origin(0.5, 0.5);
-                    RenderState.Color = Color.Black;
-                    Draw.Quad();
-                    Draw.Text(e.Id.Substring(0, e.Id.IndexOf('#')), 0.5, -1);
-                    RenderState.Pop();
-                }
+                OnRenderRoom?.Invoke(Room);
             }
             RenderState.Pop();
         }

@@ -73,20 +73,16 @@
         }
 
         public static void FaceCam() {
-            var matrix = ModelMatrix;
-            var sx = new Vec3(matrix[0, 0], matrix[0, 1], matrix[0, 2]).Length;
-            var sz = new Vec3(matrix[1, 0], matrix[1, 1], matrix[1, 2]).Length;
-            var sy = new Vec3(matrix[2, 0], matrix[2, 1], matrix[2, 2]).Length;
-            matrix[0, 0] = sx;
-            matrix[0, 1] = 0;
-            matrix[0, 2] = 0;
-            matrix[1, 1] = sy;
-            matrix[1, 0] = 0;
-            matrix[1, 2] = 0;
-            matrix[2, 2] = sz;
-            matrix[2, 0] = 0;
-            matrix[2, 1] = 0;
-            ModelMatrix = matrix;
+            // cam * model * w + (v, 0) = cam * cam-1 * cam * model * 0 + cam * cam-1 * v =
+            // = cam * (model * 0 + cam-1 * (v, 0))
+            // model * 0 + cam-1 * (v - w) = model * w - cam-1 * w + cam-1 * v
+            //ModelMatrix = new Mat4(0, 0, 0, v.X, 0, 0, 0, v.Y, 0, 0, 0, v.Z, 0, 0, 0, 1) + CameraMatrix.Inverse;
+            var m = CameraMatrix.Inverse;
+            Vec4 v = (ModelMatrix - m) * new Vec4(0, 0, 0, 1);
+            m[0, 3] += v.X;
+            m[1, 3] += v.Y;
+            m[2, 3] += v.Z;
+            ModelMatrix = m;
         }
 
         public static void Billboard() {

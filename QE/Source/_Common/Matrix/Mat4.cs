@@ -3,6 +3,7 @@ using OpenTK;
 
 namespace QE {
 
+    [System.Diagnostics.DebuggerDisplay("{ToString()}")]
     [Serializable]
     public unsafe struct Mat4 {
 
@@ -31,6 +32,22 @@ namespace QE {
             this[3, 1] = a31;
             this[3, 2] = a32;
             this[3, 3] = a33;
+        }
+
+        public override string ToString() {
+            string res = "(";
+            for (int i = 0; i < 4; i++) {
+                if (i > 0)
+                    res += ", ";
+                res += "(";
+                for (int j = 0; j < 4; j++) {
+                    if (j > 0)
+                        res += ", ";
+                    res += this[i, j];
+                }
+                res += ")";
+            }
+            return res + ")";
         }
 
         public Mat4(Vec4 v1, Vec4 v2, Vec4 v3, Vec4 v4) : this(
@@ -122,6 +139,9 @@ namespace QE {
             res[2, 3] = dz;
             return res;
         }
+        public static Mat4 CreateTranslation(Vec3 dv) {
+            return CreateTranslation(dv.X, dv.Y, dv.Z);
+        }
 
         public static Mat4 CreateScale(double sx, double sy, double sz) {
             Mat4 res = new Mat4();
@@ -202,6 +222,42 @@ namespace QE {
                 0, n / t, 0, 0,
                 0, 0, -(f + n) / (f - n), -2 * f * n / (f - n),
                 0, 0, -1, 0);
+        }
+
+        public Mat4 Inverse {
+            get {
+                double[,] a = new double[4, 8];
+                for (int i = 0; i < 4; i++)
+                    for (int j = 0; j < 4; j++) {
+                        a[i, j] = this[i, j];
+                        a[i, j + 4] = i == j ? 1 : 0;
+                    }
+
+                for (int i = 0; i < 4; i++) {
+                    int k = i;
+                    for (int j = i + 1; j < 4; j++)
+                        if (Math.Abs(a[j, i]) > Math.Abs(a[k, i]))
+                            k = j;
+                    for (int t = 0; t < 8; t++)
+                        GUtil.Swap(ref a[i, t], ref a[k, t]);
+                    for (int t = i + 1; t < 8; t++)
+                        a[i, t] /= a[i, i];
+                    a[i, i] = 1;
+                    for (int j = 0; j < 4; j++) {
+                        if (i == j) continue;
+                        for (int t = i + 1; t < 8; t++)
+                            a[j, t] -= a[i, t] * a[j, i];
+                        a[j, i] = 0;
+                    }
+                }
+
+                Mat4 res;
+                for (int i = 0; i < 4; i++)
+                    for (int j = 0; j < 4; j++)
+                        res[i, j] = a[i, j + 4];
+                
+                return res;
+            }
         }
 
     }

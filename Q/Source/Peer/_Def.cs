@@ -25,8 +25,8 @@ namespace Q {
         void Init() {
             World = new World();
             Terrain.SetupHandlers(this);
-            EntityUpdater.SetupHandlers(this);
-            MovementSytem.SetupHandlers(this);
+            Systems.EntityUpdater.SetupHandlers(this);
+            Systems.MovementSytem.SetupHandlers(this);
             SetupEntityUpdateHandlers();
         }
 
