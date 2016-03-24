@@ -12,7 +12,7 @@ namespace QE.Net {
     }
 
     public class Peer {
-        const string SERVER_NICK = "?@@#@##$@#???SF";
+        const string SERVER_NICK = "@SERVER@";
         NetPeer netPeer;
 
         public bool Server { get; private set; }
@@ -35,9 +35,9 @@ namespace QE.Net {
             Send(SERVER_NICK, new ConnectMessage(), DeliveryMethod.Reliable);
         }
 
-        public Peer(string app, string nick, int port) {
+        public Peer(string app, int port) {
             Server = true;
-            Nick = nick;
+            Nick = SERVER_NICK;
             var conf = new NetPeerConfiguration(app);
             conf.Port = port;
             conf.AcceptIncomingConnections = true;
@@ -67,7 +67,39 @@ namespace QE.Net {
                 foreach (var connection in connections.Values)
                     Send(connection, msg, method);
         }
+
+        Dictionary<KeyValuePair<NetConnection, DeliveryMethod>, object> messagePacks = new Dictionary<KeyValuePair<NetConnection, DeliveryMethod>, object>();
+        int packing = 0;
+        public void BeginMessagePack() {
+            packing++;
+        }
+        public void EndMessagePack() {
+            packing--;
+            if (packing == 0) {
+                foreach (var e in messagePacks)
+                    Send(e.Key.Key, e.Value, e.Key.Value);
+                messagePacks.Clear();
+            }
+        }
+        [Serializable]
+        class MessageList {
+            public object message;
+            public object next;
+            public MessageList(object message, object next) {
+                this.message = message;
+                this.next = next;
+            }
+        }
+        
         void Send(NetConnection to, object msg, DeliveryMethod method) {
+            if (packing != 0) {
+                var key = new KeyValuePair<NetConnection, DeliveryMethod>(to, method);
+                if (messagePacks.ContainsKey(key))
+                    messagePacks[key] = new MessageList(messagePacks[key], msg);
+                else
+                    messagePacks[key] = msg;
+                return;
+            }
             var message = netPeer.CreateMessage();
             message.Write(Nick);
             byte[] data = Serializer.ToBytes(msg);
@@ -95,7 +127,21 @@ namespace QE.Net {
 
         public event Action<string> OnPlayerConnected;
 
+        Queue<Message> gotMessages = new Queue<Message>();
+        void IterList(string sender, object m) {
+            if (m == null)
+                return;
+            var list = m as MessageList;
+            if (list == null)
+                gotMessages.Enqueue(new Message(sender, m));
+            else {
+                IterList(sender, list.message);
+                IterList(sender, list.next);
+            }
+        }
         Message GetMessage() {
+            if (gotMessages.Count != 0)
+                return gotMessages.Dequeue();
             NetIncomingMessage message;
             while ((message = netPeer.ReadMessage()) != null) {
                 switch (message.MessageType) {
@@ -124,6 +170,12 @@ namespace QE.Net {
                         var translate = (TranslateMessage)msg;
                         Send(translate.player, translate.msg, translate.method);
                         break;
+                    }
+                    if (msg is MessageList) {
+                        IterList(sender, msg);
+                        if (gotMessages.Count == 0)
+                            break;
+                        return gotMessages.Dequeue();
                     }
                     return new Message(sender, msg);
                 case NetIncomingMessageType.StatusChanged:

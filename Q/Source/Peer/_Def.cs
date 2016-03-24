@@ -14,7 +14,7 @@ namespace Q {
 
         public ESystem ESystem { get; private set; } = new ESystem();
 
-        public Peer() : base(APP_NAME, "Q_SERVER", APP_PORT) {
+        public Peer() : base(APP_NAME, APP_PORT) {
             Init();
         }
 
@@ -25,7 +25,6 @@ namespace Q {
         void Init() {
             World = new World();
             Terrain.SetupHandlers(this);
-            Systems.EntityUpdater.SetupHandlers(this);
             Systems.MovementSytem.SetupHandlers(this);
             SetupEntityUpdateHandlers();
         }
@@ -50,7 +49,9 @@ namespace Q {
                 nextTick += TickTime;
                 if (nextTick < 0)
                     nextTick = 0;
+                BeginMessagePack();
                 Tick();
+                EndMessagePack();
             }
             OnUpdate?.Invoke(dt);
         }
@@ -66,13 +67,18 @@ namespace Q {
             }
         }
 
+        HashSet<Entity> updatedEntities = new HashSet<Entity>();
         void SetupEntityUpdateHandlers() {
             var ownEntities = new PlayerGroup(ESystem, Nick);
             OnTick += () => {
-                foreach (var e in ownEntities.Entities) {
+                foreach (var e in updatedEntities)
                     SendToAll(e, Net.DeliveryMethod.Default);
-                }
+                foreach (var e in ownEntities.Entities)
+                    SendToAll(new EntityId(e.Id), Net.DeliveryMethod.Default);
             };
+            foreach (var e in ownEntities.Entities)
+                e.OnChanged += () => updatedEntities.Add(e);
+            ownEntities.OnAddEntity += e => e.OnChanged += () => updatedEntities.Add(e);
             AddHandler((string sender, Entity e) => {
                 if (ESystem[e.Id] == null) {
                     ESystem.Add(e);
@@ -80,6 +86,29 @@ namespace Q {
                     UpdateEntity(ESystem[e.Id], e);
                 }
             });
+            AddHandler((string sender, EntityId eId) => {
+                if (ESystem[eId.id] == null) {
+                    Send(sender, new EntityRequest(eId.id), Net.DeliveryMethod.Default);
+                }
+            });
+            AddHandler((string sender, EntityRequest req) => {
+                 Send(sender, ESystem[req.id], Net.DeliveryMethod.Default);
+            });
+        }
+
+        [Serializable]
+        class EntityId {
+            public string id;
+            public EntityId(string id) {
+                this.id = id;
+            }
+        }
+        [Serializable]
+        class EntityRequest {
+            public string id;
+            public EntityRequest(string id) {
+                this.id = id;
+            }
         }
     }
 

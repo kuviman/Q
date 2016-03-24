@@ -55,7 +55,7 @@ namespace Q {
                     for (int j = 0; j <= CHUNK_SIZE; j++)
                         Empty[i, j] = new Color(1, 1, 1, 1);
                 Empty.Wrap = Texture.WrapMode.Clamp;
-                Empty.Smooth = false;
+                Empty.Smooth = true;
             }
 
             void Update(int i, int j) {

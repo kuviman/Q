@@ -18,6 +18,7 @@ namespace Q {
 
             Systems.Render.Face.SetupHandlers(this);
             Systems.Render.Legs.SetupHandlers(this);
+            Systems.Render.Image.SetupHandlers(this);
 
             cam.Distance = 8;
             cam.UpAngle = -Math.PI / 2.3;
@@ -54,7 +55,7 @@ namespace Q {
                 v.X += 1;
             v = Vec2.Rotate(v, cam.Rotation);
             if (PlayerData != null) {
-                PlayerData.MainUnit.Get<Components.Movement>().Vel = new Vec3(v * 10, 0);
+                PlayerData.MainUnit.Get<Components.Movement>().Vel = new Vec3(v * 5, 0);
                 var pos = PlayerData.MainUnit.Get<Components.Position>();
                 cam.Position = pos.Pos;
                 Vec3 dir = new Vec3(2 * mousePos.X / winSize.Y - (double)winSize.X / winSize.Y, 2 * mousePos.Y / winSize.Y - 1, -1);

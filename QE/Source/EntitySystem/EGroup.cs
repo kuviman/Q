@@ -21,11 +21,20 @@ namespace QE.EntitySystem {
             get { return entities; }
         }
 
+        public event Action<Entity> OnAddEntity;
+        public event Action<Entity> OnRemoveEntity;
         void Check(Entity entity) {
-            if (filter(entity))
-                entities.Add(entity);
-            else
-                entities.Remove(entity);
+            if (filter(entity)) {
+                if (!entities.Contains(entity)) {
+                    entities.Add(entity);
+                    OnAddEntity?.Invoke(entity);
+                }
+            } else {
+                if (entities.Contains(entity)) {
+                    entities.Remove(entity);
+                    OnRemoveEntity?.Invoke(entity);
+                }
+            }
         }
 
     }

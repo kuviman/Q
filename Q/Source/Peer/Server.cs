@@ -18,9 +18,15 @@ namespace Q {
                         for (int j = fromY; j < toY; j++) {
                             var v = World[room].Terrain[i, j];
                             v.Texture = GRandom.Choice(texs);
-                            v.Height = GRandom.NextDouble(0, -1);
+                            v.Height = GRandom.NextDouble(0, -0.2);
                             World[room].Terrain[i, j] = v;
                         }
+                    for (int i = 0; i < 1; i++) {
+                        var tree = new Entity(GenId());
+                        tree.Set(new Components.Position(room, new Vec3(GRandom.NextDouble(fromX, toX), GRandom.NextDouble(fromY, toY), 0), 0));
+                        tree.Set(new Components.Image(new ResourcedTexture("Decoration/Tree.png"), 4));
+                        ESystem.Add(tree);
+                    }
                 };
             };
             OnPlayerConnected += (string player) => {

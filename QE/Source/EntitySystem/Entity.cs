@@ -22,7 +22,7 @@ namespace QE.EntitySystem {
         void InitEvents() {
             OnComponentChanged += (name, c1, c2) => OnChanged?.Invoke();
             foreach (var comp in components.Values)
-                comp.OnChanged += OnChanged;
+                comp.OnChanged += () => OnChanged?.Invoke();
         }
         
         public event Action OnChanged;
@@ -37,7 +37,7 @@ namespace QE.EntitySystem {
         public void Set(string name, IComponent component) {
             var current = Get(name);
             if (component != null) {
-                component.OnChanged += OnChanged;
+                component.OnChanged += () => OnChanged?.Invoke();
                 components[name] = component;
             } else {
                 components.Remove(name);

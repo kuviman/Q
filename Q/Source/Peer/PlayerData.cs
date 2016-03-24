@@ -11,7 +11,7 @@ namespace Q {
             MainUnit = new Entity(player + "#Hero");
             MainUnit.Set(new Components.Position("default", Vec3.Zero, 0));
             MainUnit.Set(new Components.Movement());
-            MainUnit.Set(new Components.Face(new ResourcedTexture("Face/YellowBoy.png")));
+            MainUnit.Set(new Components.Face(new ResourcedTexture("Face/Ginger.png")));
             MainUnit.Set(new Components.Legs());
         }
     }
